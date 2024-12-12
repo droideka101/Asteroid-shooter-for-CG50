@@ -25,9 +25,27 @@ game_over = False  # To track the game-over state
 gun_temp = 100
 d_temp = 5
 
+Lives = 5
+zero_lives_timer = None
+
+def LivesDisplay(surface, Lives):
+    startX = 385
+    startY = 5
+    parts = [
+        pygame.Rect(startX, startY, 4, 10),
+        pygame.Rect(startX + 6, startY, 4, 10),
+        pygame.Rect(startX - 2, startY + 2, 14, 6),
+        pygame.Rect(startX + 2, startY + 8, 6, 4)
+    ]
+    for i in range(Lives):
+        for part in parts:
+            part.x -= 20 
+            pygame.draw.rect(surface, (204, 24, 31), part)
+        
+
 def gunTempDisplay(surface, temp):
     length = temp * 3.84
-    print(temp)
+    #print(temp)
     objectRect = pygame.Rect(0, 212, length, 4)
     pygame.draw.rect(surface, (45, 236, 11), objectRect)
 
@@ -150,11 +168,11 @@ class PlayerShip():
 
     def inputHandler(self, keyHeld):
         """Handles input for acceleration or deceleration."""
-        if keyHeld[pygame.K_UP] and keyHeld[pygame.K_DOWN]:
+        if keyHeld[pygame.K_w] and keyHeld[pygame.K_s]:
             return 0  # No change in speed
-        if keyHeld[pygame.K_UP]:
+        if keyHeld[pygame.K_w]:
             return -1  # Move up
-        if keyHeld[pygame.K_DOWN]:
+        if keyHeld[pygame.K_s]:
             return 1  # Move down
         else:
             return 0  # Gradual deceleration
@@ -254,6 +272,8 @@ def restart():
     global lasers
     global score
     global gun_temp
+    global Lives
+    global zero_lives_timer 
     lasers = []
     player_ship.parts[0].x = 50
     player_ship.parts[0].y = 98
@@ -262,6 +282,8 @@ def restart():
         asteroid.parts[0].y = random.randint(0, SIZE[1])
     gun_temp = 100
     score = 0
+    Lives = 3
+    zero_lives_timer = None
 
 
 while True:
@@ -290,6 +312,7 @@ while True:
             pygame.quit()
             sys.exit()
         if keyHeld[pygame.K_5]:
+            pygame.time.wait(500)
             restart()
             game_state = "start_menu"
 
@@ -310,9 +333,14 @@ while True:
         # Update and draw player ship
         player_ship.updateXY(keyHeld, dt)
 
+        if gun_temp == 0:
+            guns_Overheated = True
+        if gun_temp > 100:
+            guns_Overheated = False
+
         # Laser firing logic
         laser_timer += dt * 1000  # Convert dt to milliseconds
-        if keyHeld[pygame.K_0] and laser_timer >= laser_delay and gun_temp >= 2:
+        if keyHeld[pygame.K_0] and laser_timer >= laser_delay and gun_temp >= 2 and not guns_Overheated:
             if next_laser_side == 0:
                 lasers.append(Laser(player_ship.parts[7].x, player_ship.parts[7].y - 2))  # Top wing tip
                 next_laser_side = 1
@@ -346,13 +374,64 @@ while True:
 
         scoreDisplay(score, text_font)
 
+        LivesDisplay(overlay, Lives) 
+
         for asteroid in scrolling_asteroid_list:
+            collision_detected = False
             for ship_part in player_ship.parts:
                 for asteroid_part in asteroid.parts:
                     if asteroid_part.colliderect(ship_part):  # Collision
-                        time.sleep(1)
-                        game_state = "game_over"
-                        game_over = True
+                        collision_detected = True
+                        Lives -= 1
+                        asteroid.parts[0].x = random.randint(SIZE[0], SIZE[0] * 2)
+                        asteroid.parts[0].y = random.randint(0, SIZE[1])
+                        print(f"Remaining Lives {Lives}")
+                        break
+                if collision_detected:
+                    break
+
+        # if Lives <= 0:
+        #     pygame.time.wait(1000)
+        #     game_state = "game_over"
+        #     game_over = True
+
+        if Lives <= 0:
+            # Display 0 hearts
+            Lives = 0
+            LivesDisplay(overlay, Lives)  # Update the overlay with 0 lives
+            screen.blit(overlay, (0, 0))  # Redraw overlay (with 0 hearts)
+            pygame.display.update()  # Force a screen update to show 0 hearts
+
+            # Add a short pause to let the player see the 0 hearts
+            pygame.time.wait(1000)  # Wait for 1 second (non-blocking)
+
+            # Now transition to the game over state
+            game_state = "game_over"
+            game_over = True
+
+        # Add a new variable to track the "pause" when lives reach 0
+
+        
+
+        # if Lives <= 0 and zero_lives_timer is None:
+        #     print("timer started")
+        #     # Start the timer when lives reach 0
+        #     zero_lives_timer = pygame.time.get_ticks()
+        #     Lives = 0
+        #     LivesDisplay(overlay, Lives)  # Display 0 hearts
+        #     screen.blit(overlay, (0, 0))
+        #     pygame.display.update()  # Show the update immediately
+
+        # if zero_lives_timer is not None:
+        #     print("timer check")
+        #     # Check if 1 second has passed since the timer started
+        #     if pygame.time.get_ticks() - zero_lives_timer >= 1000:  # 1000 ms = 1 second
+        #         print("timer reached one second")
+        #         # End the pause and switch to the game-over state
+        #         zero_lives_timer = None  # Reset the timer
+        #         game_state = "game_over"
+        #         game_over = True
+                
 
         # Draw everything
         for star in scrolling_stars_list:
@@ -370,3 +449,5 @@ while True:
         screen.blit(overlay, (0, 0))
         pygame.display.update()
         #clock.tick(FPS)
+
+#Current test - 3 lives before game over, trying to make 0 hearts show for a second between losing last life and gameover screen showing
