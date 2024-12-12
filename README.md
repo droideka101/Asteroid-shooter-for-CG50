@@ -1,6 +1,5 @@
-# Asteroid-shooter-for-CG50
+# Asteroid-shooter-for-CG50 ![altText](/icon.ico)
   small asteroid game designed to hopefully run on a casio CG-50 calculator
-  ![altText](/icon.ico)
 ## Controls:
   ### Start Menu
     Right arrow - Start
