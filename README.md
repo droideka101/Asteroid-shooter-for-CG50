@@ -1,6 +1,7 @@
 <p align="center">
     <img width="200" src="/icon.ico" alt="icon">
 </p>
+
 # Asteroid-shooter-for-CG50 
   small asteroid game designed to hopefully run on a casio CG-50 calculator
 ## Controls:
