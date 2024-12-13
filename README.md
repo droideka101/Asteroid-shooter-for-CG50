@@ -22,3 +22,6 @@
     + 5 points for each asteroid destroyed
     - 10 points for each asteroid that passes past the player
     green bar is the gun over heat and will reduce your firing speed if too low
+
+required python and pygame install to run
+(https://www.python.org/downloads/, https://www.pygame.org/download.shtml)
