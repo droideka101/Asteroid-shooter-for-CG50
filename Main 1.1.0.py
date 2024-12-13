@@ -168,11 +168,11 @@ class PlayerShip():
 
     def inputHandler(self, keyHeld):
         """Handles input for acceleration or deceleration."""
-        if keyHeld[pygame.K_w] and keyHeld[pygame.K_s]:
+        if keyHeld[pygame.K_UP] and keyHeld[pygame.K_DOWN]:
             return 0  # No change in speed
-        if keyHeld[pygame.K_w]:
+        if keyHeld[pygame.K_UP]:
             return -1  # Move up
-        if keyHeld[pygame.K_s]:
+        if keyHeld[pygame.K_DOWN]:
             return 1  # Move down
         else:
             return 0  # Gradual deceleration
@@ -426,6 +426,3 @@ while True:
         screen.blit(display, (0, 0))
         screen.blit(overlay, (0, 0))
         pygame.display.update()
-        #clock.tick(FPS)
-
-#Current test - 3 lives before game over, trying to make 0 hearts show for a second between losing last life and gameover screen showing
