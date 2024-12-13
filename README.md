@@ -19,6 +19,6 @@
     Right arrow - Quit
 
   ### notes
-    + 5 points for each asteroid destroyed\
-    - 10 points for each asteroid that passes past the player\
-    green bar is the gun over heat and will reduce your firing speed if too low\
+    + 5 points for each asteroid destroyed
+    - 10 points for each asteroid that passes past the player
+    green bar is the gun over heat and will reduce your firing speed if too low
