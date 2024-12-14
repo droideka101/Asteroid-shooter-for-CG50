@@ -1,7 +1,6 @@
 import pygame
 import sys
 import random
-import time
 
 pygame.init()
 SIZE = (384, 216)
@@ -14,7 +13,7 @@ menu = pygame.Surface((SIZE), pygame.SRCALPHA)
 
 text_font = pygame.font.SysFont(None, 15)
 menu_font = pygame.font.SysFont(None, 20)
-title_font = pygame.font.SysFont(None, 30)
+title_font = pygame.font.SysFont(None, 45)
 clock = pygame.time.Clock()
 
 score = 0
@@ -28,6 +27,22 @@ d_temp = 5
 Lives = 3
 zero_lives_timer = None
 
+def explosion(surface, startX, startY, hit_type):
+    #explosion_size = (10, 10)
+    parts = [
+        pygame.Rect(startX, startY, 20, 20),
+        pygame.Rect(startX - 3, startY + 5, 20, 20),
+        pygame.Rect(startX + 4, startY + 3, 20, 23),
+        pygame.Rect(startX + 7, startY - 2, 20, 20)
+    ]
+
+    if hit_type == "laser":
+        for part in parts:
+            pygame.draw.rect(surface, (35, 122, 43), part)
+    if hit_type == "ship":
+        for part in parts:
+            pygame.draw.rect(surface, (219, 80, 0), part)
+
 def LivesDisplay(surface, Lives):
     startX = 385
     startY = 5
@@ -40,8 +55,7 @@ def LivesDisplay(surface, Lives):
     for i in range(Lives):
         for part in parts:
             part.x -= 20 
-            pygame.draw.rect(surface, (204, 24, 31), part)
-        
+            pygame.draw.rect(surface, (204, 24, 31), part)     
 
 def gunTempDisplay(surface, temp):
     length = temp * 3.84
@@ -51,12 +65,105 @@ def gunTempDisplay(surface, temp):
 
 def draw_start_menu():
     menu.fill((0, 0, 0))  # Black background
+
+
     title = title_font.render("BALLS GAME", True, pygame.Color("WHITE"))
     start_button = menu_font.render("START >>", True, (255, 255, 255))
     quit_button = menu_font.render("QUIT   <<", True, (255, 255, 255))
+
+    earth_parts = [
+        pygame.Rect(0, 10, 110, 110),
+        pygame.Rect(40, 23, 73, 18),
+        pygame.Rect(63, 30, 50, 35),
+        pygame.Rect(90, 55, 20, 50),
+        pygame.Rect(60, 80, 18, 14),
+        pygame.Rect(0, 25, 20, 25),
+        pygame.Rect(0, 50, 8, 10),
+        pygame.Rect(0, 60, 30, 25),
+        pygame.Rect(0, 85, 6, 20),
+    ]
+    earth_parts_colours = [
+        (0, 162, 232),
+        (34, 177, 76),
+        (34, 177, 76),
+        (34, 177, 76),
+        (34, 177, 76),
+        (34, 177, 76),
+        (34, 177, 76),
+        (34, 177, 76),
+        (34, 177, 76),
+    ]
+
+    ship_parts = [
+        pygame.Rect(55, 170, 35, 4),  # Main body
+        pygame.Rect(55 + 8, 170 - 15, 5, 34),  # wing
+        pygame.Rect(55, 170 - 3, 20, 10),  # Top part
+        pygame.Rect(55, 170 - 5, 5, 14),  # boosters
+        pygame.Rect(55 - 2, 170 - 5, 3, 14),  # booster fire
+        pygame.Rect(55 - 5, 170, 8, 4),  # boosters2
+        pygame.Rect(55 + 10, 170, 8, 4),  # cockpit
+        pygame.Rect(55 + 6, 170 + 17, 10, 2),  # top wing tip
+        pygame.Rect(55 + 6, 170 - 15, 10, 2),  # bottom wing tip
+
+        pygame.Rect(250, 30, 35, 4),  # Main body
+        pygame.Rect(250 + 8, 30 - 15, 5, 34),  # wing
+        pygame.Rect(250, 30 - 3, 20, 10),  # Top part
+        pygame.Rect(250, 30 - 5, 5, 14),  # boosters
+        pygame.Rect(250 - 2, 30 - 5, 3, 14),  # booster fire
+        pygame.Rect(250 - 5, 30, 8, 4),  # boosters2
+        pygame.Rect(250 + 10, 30, 8, 4),  # cockpit
+        pygame.Rect(250 + 6, 30 + 17, 10, 2),  # top wing tip
+        pygame.Rect(250 + 6, 30 - 15, 10, 2)  # bottom wing tip
+    ]
+    ship_parts_colours = [
+        (145, 145, 145),  # Colour for main body (gray)
+        (145, 145, 145),  # Colour for wing (gray)
+        (105, 105, 105),  # Colour for top part (gray)
+        (105, 105, 105),  # Colour for boosters (gray)
+        (186, 62, 0),     # Colour for booster fire (orange)
+        (0, 0, 0),        # Colour for boosters2 (black)
+        (103, 159, 191),  # Colour for cockpit (blue)
+        (145, 145, 145),  # Colour for top wing tip
+        (145, 145, 145),   # Colour for bottom wing tip
+        (145, 145, 145),  # Colour for main body (gray)
+        (145, 145, 145),  # Colour for wing (gray)
+        (105, 105, 105),  # Colour for top part (gray)
+        (105, 105, 105),  # Colour for boosters (gray)
+        (186, 62, 0),     # Colour for booster fire (orange)
+        (0, 0, 0),        # Colour for boosters2 (black)
+        (103, 159, 191),  # Colour for cockpit (blue)
+        (145, 145, 145),  # Colour for top wing tip
+        (145, 145, 145)
+    ]
+
+    stars = [
+        pygame.Rect(123, 45, 2, 2),  # Example: Replace 123 and 45 with actual random values
+        pygame.Rect(245, 89, 2, 2),
+        pygame.Rect(78, 193, 2, 2),
+        pygame.Rect(310, 67, 2, 2),
+        pygame.Rect(163, 201, 2, 2),
+        pygame.Rect(256, 153, 2, 2),
+        pygame.Rect(172, 12, 2, 2),
+        pygame.Rect(93, 97, 2, 2),
+        pygame.Rect(298, 38, 2, 2),
+        pygame.Rect(214, 184, 2, 2),
+        pygame.Rect(58, 207, 2, 2),
+        pygame.Rect(371, 142, 2, 2),
+    ]
+
+    for star in stars:
+        pygame.draw.rect(menu, (255,255,255), star)
+
+    for i, part in enumerate(ship_parts):
+        pygame.draw.rect(menu,ship_parts_colours[i], part)
+
+    for i, part in enumerate(earth_parts):
+        pygame.draw.rect(menu,earth_parts_colours[i], part)
+
     menu.blit(title, (SIZE[0] / 2 - title.get_width() / 2, SIZE[1] / 3 - title.get_height() / 2))
     menu.blit(start_button, (SIZE[0] / 2 - start_button.get_width() / 2, SIZE[1] / 2))
     menu.blit(quit_button, (SIZE[0] / 2 - quit_button.get_width() / 2, SIZE[1] / 2 + quit_button.get_width() / 2))
+
     screen.blit(menu, (0, 0))
     pygame.display.update()
 
@@ -168,11 +275,11 @@ class PlayerShip():
 
     def inputHandler(self, keyHeld):
         """Handles input for acceleration or deceleration."""
-        if keyHeld[pygame.K_UP] and keyHeld[pygame.K_DOWN]:
+        if keyHeld[pygame.K_w] and keyHeld[pygame.K_s]:
             return 0  # No change in speed
-        if keyHeld[pygame.K_UP]:
+        if keyHeld[pygame.K_w]:
             return -1  # Move up
-        if keyHeld[pygame.K_DOWN]:
+        if keyHeld[pygame.K_s]:
             return 1  # Move down
         else:
             return 0  # Gradual deceleration
@@ -365,6 +472,7 @@ while True:
                     if laser.objectRect.colliderect(asteroid_parts):
                         try:
                             lasers.remove(laser)
+                            explosion(overlay, asteroid_parts.x, asteroid_parts.y, "laser")
                             asteroid.parts[0].x = random.randint(SIZE[0], SIZE[0] * 2)
                             asteroid.parts[0].y = random.randint(0, SIZE[1])
                             score += 5
@@ -382,6 +490,7 @@ while True:
                 for asteroid_part in asteroid.parts:
                     if asteroid_part.colliderect(ship_part):  # Collision
                         collision_detected = True
+                        explosion(overlay, asteroid_part.x, asteroid_part.y, "ship")
                         Lives -= 1
                         asteroid.parts[0].x = random.randint(SIZE[0], SIZE[0] * 2)
                         asteroid.parts[0].y = random.randint(0, SIZE[1])
