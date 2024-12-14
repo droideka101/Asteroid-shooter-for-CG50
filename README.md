@@ -27,4 +27,4 @@ required python and pygame install to run the uncompiled .py file
 (https://www.python.org/downloads/, https://www.pygame.org/download.shtml)
 
 else here is the compiled exe download:
-(https://www.mediafire.com/file/c0qs8wf5waxmup1/Main+1.2.0.exe/file)
+(https://www.mediafire.com/file/axkt5tisw82r11f/Main_1.2.1.exe/file)
